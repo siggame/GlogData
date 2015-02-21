@@ -19,17 +19,44 @@ class Game(object):
 def decompress_file(filename):
     filename_ext = filename.split('.')
     f = BZ2File(filename, 'r')
-    log = f.read()
+    try:
+        log = f.read()
+    except IOError:
+        print "Error invalid data stream"
+        return 
+
     f.close()
     new_file = open(filename_ext[0] + '.gamelog', 'w')
     new_file.write(log)
     new_file.close()
 
-def get_data(filename):
-    reader = open(filename + '.gamelog', 'r')
-    log = reader.read()
-    data = datatize_expr(log, 0)
+def get_log(filename):
+    filename_ext = filename.split('.')
+    log = ''
+    if filename_ext[1] == 'glog':
+        print "Assuming bz2 compression"
+        f = BZ2File(filename, 'r')
+        try:
+            log = f.read()
+        except IOError:
+            print "Error invalid data stream"
+            print "File is not bz2"
+            print "Trying file as uncompressed format"
+            filename_ext[1] = 'gamelog'
+        f.close()
+    
+    if filename_ext[1] == 'gamelog':
+        print "Assuming uncompressed gamelog"
+        f = open(filename, 'r')
+        log = f.read()
+    return log
 
+def get_data(filename):
+    log = get_log(filename)
+    data = datatize_expr(log, 0)
+    for i in data:
+        print i
+        print ""
     return data
 
 def convert_data(data):
@@ -54,7 +81,10 @@ def convert_data(data):
 
     print 'gameName', data_dict['gameName']
     print 'turn_1', data_dict['turn_1']
+    print ""
     print 'turn_2', data_dict['turn_2']
+    print ""
+    print 'turn_3', data_dict['turn_3']
 
 func_count = 0
 
@@ -114,7 +144,12 @@ def list_data(_list):
     if type(_list) is type(list()):
         return _list[1]
     else:
-        return expr_data(_list)[0]
+        print _list
+        temp = expr_data(_list)
+        if temp:
+            return temp[0]
+        else:
+            return []
 
 def clean_expr(expr):
     return strip_quotes(strip_paren(expr))
@@ -148,8 +183,9 @@ def strip_parent_expr(string):
     return new_string
 
 if __name__ == "__main__":
-    filename = '10022-c0ca0'
-    decompress_file(filename + '.glog')
-    # convert_data(get_data(filename))
+    # filename = '10022-c0ca0.gamelog'
+    filename = '10007-eb6d8.gamelog'
+    # decompress_file(filename + '.gamelog')
+    convert_data(get_data(filename))
     # print strip_parent_expr('3 (412 h (e w3) (3 1))')
     
