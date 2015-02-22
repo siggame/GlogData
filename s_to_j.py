@@ -54,37 +54,25 @@ def get_log(filename):
 def get_data(filename):
     log = get_log(filename)
     data = datatize_expr(log, 0)
-    for i in data:
-        print i
-        print ""
     return data
 
 def convert_data(data):
-    print ""
-    print "DATA!"
-
-    data_dict = defaultdict(list)
-
-    turn_numb = 0
+    data_dict = {}
+    data_dict['super'] = {}
+    data_dict['turns'] = defaultdict(list)
+    turn_numb = -1
     for i in data:
-
-        print "key", list_key(i)
-
         if list_key(i) == 'gameName':
-            data_dict['gameName'] = list_data(i)
+            data_dict['super']['gameName'] = list_data(i)
         elif list_key(i) == 'status':
             turn_numb += 1
-            data_dict['turn_%d' % turn_numb] = list_data(i)
+            data_dict['turns'][turn_numb] = list_data(i)
         elif list_key(i) == 'animations':
-            print list_data(i)
-            data_dict['turn_%d' % turn_numb].append(i)
+            data_dict['turns'][turn_numb].append(i)
+        elif list_key(i) == 'game-winner':
+            data_dict['super']['winner'] = i
 
-    print 'gameName', data_dict['gameName']
-    print 'turn_1', data_dict['turn_1']
-    print ""
-    print 'turn_2', data_dict['turn_2']
-    print ""
-    print 'turn_3', data_dict['turn_3']
+    return data_dict
 
 func_count = 0
 
@@ -144,7 +132,6 @@ def list_data(_list):
     if type(_list) is type(list()):
         return _list[1]
     else:
-        print _list
         temp = expr_data(_list)
         if temp:
             return temp[0]
@@ -186,6 +173,12 @@ if __name__ == "__main__":
     # filename = '10022-c0ca0.gamelog'
     filename = '10007-eb6d8.gamelog'
     # decompress_file(filename + '.gamelog')
-    convert_data(get_data(filename))
-    # print strip_parent_expr('3 (412 h (e w3) (3 1))')
+    data = convert_data(get_data(filename))
+    from game_object import Game
+    c = Game(data['super']['gameName'])
+    c.processTurns(data['turns'])
+    print('total turns', c.total_turns)
+    print(c.width)
+    print(c.height)
+    print(c.spore_count_by_turn)
     
