@@ -181,7 +181,7 @@ if __name__ == "__main__":
     print(c.width)
     print(c.height)
     print(c.spore_count_by_turn)
-    #print(c.created_units)
-    #print(c.player1_created_units)
-    #print(c.player2_created_units)
-    
+    print(c.created_units)
+    print(c.player1_created_units)
+    print(c.player2_created_units)
+    print(c.units_per_turn)

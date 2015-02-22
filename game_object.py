@@ -1,4 +1,5 @@
 from utilities import list_data, list_key, extracted_data
+from collections import defaultdict
 
 def get_game_type(game_name):
     return Game(game_name)
@@ -17,6 +18,8 @@ class Game(object):
         self.depth = 0
         self.player1_created_units = 0
         self.player2_created_units = 0
+
+        self.units_per_turn = defaultdict(list)
 
     def unit_created(self):
         self.created_units += 1
@@ -56,7 +59,7 @@ class Game(object):
                         k = list_key(i)
                         j = extracted_data(i)
                     else:
-                        j = [i.split(' ')]
+                        j = i.split(' ')
                 else:
                     k = list_key(i)
                     j = extracted_data(i)
@@ -130,9 +133,11 @@ class PlantsData(GameData):
 
         self.game_func = self._game_func
         self.player_func = self._player_func
+        self.plant_func = self._plant_func
 
         self.game_order = ['width', 'height', 'turn', 'empty', 'empty']
         self.player_order = ['player_number', 'player_name', 'time_left', 'spore_count']
+        self.plant_order = ['id', 'empty', 'empty', 'owner', 'empty', 'empty']
 
         self.plant_ids_found = []
         self.player1_ids = []
@@ -157,29 +162,23 @@ class PlantsData(GameData):
         else:
             self.gameObj.spore_count_by_turn.append(float(s_d))
 
+    def _plant_func(self, data):
+        print data
+        plant_id = int(self.get_item('id', self.plant_order, data))
+        plant_owner = int(self.get_item('owner', self.plant_order, data))
+        if not self.plant_ids_found.count(int(plant_id)):
+            self.plant_ids_found.append(int(plant_id))
+            print self.plant_ids_found
+            if plant_owner == 0:
+                self.gameObj.player1_created_units += 1
+            elif plant_owner == 1:
+                self.gameObj.player2_created_units += 1
 
-    def plant_func(self, data):
-        # print "PLANT FUNC", data
-        pass
-
-    def plant_id(self, data):
-        if not self.plant_ids_found.count(int(data)):
-            self.plant_ids_found.append(int(data))
         if self.gameObj.created_units < len(self.plant_ids_found):
             self.gameObj.created_units = len(self.plant_ids_found)
 
-    def plant_owner(self, data):
-        d = int(data)
-        if d == 0:
-            if not self.player1_ids.count(d):
-                self.player1_ids.append(d)
-                if self.gameObj.player1_created_units < len(self.player1_ids):
-                    self.gameObj.player1_created_units = len(self.player1_ids)
-        elif d == 1:
-            if not self.player2_ids.count(d):
-                self.player2_ids.append(d)
-                if self.gameObj.player2_created_units < len(self.player2_ids):
-                    self.gameObj.player2_created_units = len(self.player2_ids)
+        self.gameObj.units_per_turn[self.current_turn].append((plant_id, plant_owner))
+
 
     def spore_count(self, data):
         if self.current_turn == 0:
