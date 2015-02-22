@@ -1,21 +1,6 @@
 from bz2 import BZ2File
 from collections import defaultdict
 
-class Game(object):
-    def __init__(self, data):
-        self.set_data(data)
-        self.data = {}
-    
-    def set_name(self, data):
-        for i in data:
-            if expr_key(i[0]) == 'gameName':
-                self.name = expr_data(i[0])[0]
-                break
-
-    def set_data(self, data):
-        self.set_name(data)
-        
-
 def decompress_file(filename):
     filename_ext = filename.split('.')
     f = BZ2File(filename, 'r')
