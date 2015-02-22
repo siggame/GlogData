@@ -38,7 +38,7 @@ class Game(object):
             else:
                 if key is not None:
                     k = key
-                    j = i
+                    j = []
                     # special case for player since the quotes were removed
                     if k == 'Player':
                         temp = i.split(' ')
@@ -52,6 +52,8 @@ class Game(object):
                         j.append(player_name)
                         j.append(temp[0])
                         j = j[::-1]
+                    else:
+                        j = i
                 else:
                     k = list_key(i)
                     j = extracted_data(i)
