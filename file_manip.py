@@ -1,5 +1,6 @@
 from bz2 import BZ2File
 from collections import defaultdict
+from utilities import sexpr_key, expr_key, expr_data, list_key, list_data
 
 def decompress_file(filename):
     filename_ext = filename.split('.')
@@ -59,11 +60,7 @@ def convert_data(data):
 
     return data_dict
 
-func_count = 0
-
 def datatize_expr(expr, depth):
-    global func_count
-    func_count += 1
     s_exp = ""
     p_count = 0
     building_exp = False
@@ -89,39 +86,11 @@ def datatize_expr(expr, depth):
             if has_sub_exp:
                 p_data = [expr_key(clean_expr(s_exp))]
                 p_data.append([s_data for s_data in datatize_expr(strip_parent_expr(s_exp), depth + 1)])
+                # print p_data
                 data.append(p_data)
             else:
-                #if depth >= 1:
-                #    data.append(clean_expr(s_exp))
-                #else:
-                #    data.append([clean_expr(s_exp)])
                 data.append(clean_expr(s_exp))
     return data
-
-def sexpr_key(s_expr):
-    return s_expr.strip('(').split(' ')[0]
-
-def expr_key(expr):
-    return expr.split(' ')[0]
-
-def expr_data(expr):
-    return expr.split(' ')[1:]
-
-def list_key(_list):
-    if type(_list) is type(list()):
-        return _list[0]
-    else:
-        return expr_key(_list)
-
-def list_data(_list):
-    if type(_list) is type(list()):
-        return _list[1]
-    else:
-        temp = expr_data(_list)
-        if temp:
-            return temp[0]
-        else:
-            return []
 
 def clean_expr(expr):
     return strip_quotes(strip_paren(expr))

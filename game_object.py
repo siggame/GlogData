@@ -26,6 +26,8 @@ class Game(object):
 
     def processTurns(self, data):
         self.glogdata = get_game_data_type(self.name)
+        if self.glogdata is None:
+            return
         self.glogdata.set_game(self)
         sorted_keys = data.keys()
         sorted_keys.sort()
@@ -68,7 +70,7 @@ class Game(object):
                 k = k.lower()
 
                 if self.glogdata.params().count(k):
-                    print "Processing", k, j                
+                    # print "Processing", k, j                
                     self.glogdata.get_funcs(k)(j)
                     
                     # specific_funs = self.glogdata.get_funcs(k)
@@ -78,9 +80,8 @@ class Game(object):
 
 class GameData(object):
     def __init__(self):
-        self.Player = [self.empty_func, self.empty_func, self.empty_func]
+        self.player_order = ['empty', 'empty', 'empty']
         self.animation = [self.empty_func, self.empty_func]
-        # self.add = [self.add_func]
 
     def set_game(self, gameObj):
         self.gameObj = gameObj
@@ -127,6 +128,14 @@ class ChessData(GameData):
         print data
         pass
         
+class MarsData(GameData):
+    def __init__(self):
+        super(MarsData, self).__init__()
+        self.game_func = self._game_func
+
+    def _game_func(self, data):
+        pass
+
 class PlantsData(GameData):
     def __init__(self):
         super(PlantsData, self).__init__()
@@ -136,7 +145,7 @@ class PlantsData(GameData):
         self.plant_func = self._plant_func
 
         self.game_order = ['width', 'height', 'turn', 'empty', 'empty']
-        self.player_order = ['player_number', 'player_name', 'time_left', 'spore_count']
+        self.player_order.extend(['spore_count'])
         self.plant_order = ['id', 'empty', 'empty', 'owner', 'empty', 'empty']
 
         self.plant_ids_found = []
@@ -163,12 +172,10 @@ class PlantsData(GameData):
             self.gameObj.spore_count_by_turn.append(float(s_d))
 
     def _plant_func(self, data):
-        print data
         plant_id = int(self.get_item('id', self.plant_order, data))
         plant_owner = int(self.get_item('owner', self.plant_order, data))
         if not self.plant_ids_found.count(int(plant_id)):
             self.plant_ids_found.append(int(plant_id))
-            print self.plant_ids_found
             if plant_owner == 0:
                 self.gameObj.player1_created_units += 1
             elif plant_owner == 1:
