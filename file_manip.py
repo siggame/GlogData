@@ -1,6 +1,7 @@
 from bz2 import BZ2File
 from collections import defaultdict
 from utilities import sexpr_key, expr_key, expr_data, list_key, list_data
+import time
 
 def decompress_file(filename):
     filename_ext = filename.split('.')
@@ -8,7 +9,7 @@ def decompress_file(filename):
     try:
         log = f.read()
     except IOError:
-        print "Error invalid data stream"
+        print("Error invalid data stream")
         return 
 
     f.close()
@@ -20,34 +21,44 @@ def get_log(filename):
     filename_ext = filename.split('.')
     log = ''
     if filename_ext[1] == 'glog':
-        print "Assuming bz2 compression"
+        print("Assuming bz2 compression")
         f = BZ2File(filename, 'r')
         try:
             log = f.read()
         except IOError:
-            print "Error invalid data stream"
-            print "File is not bz2"
-            print "Trying file as uncompressed format"
+            print("Error invalid data stream")
+            print("File is not bz2")
+            print("Trying file as uncompressed format")
             filename_ext[1] = 'gamelog'
         f.close()
     
     if filename_ext[1] == 'gamelog':
-        print "Assuming uncompressed gamelog"
+        print("Assuming uncompressed gamelog")
         f = open(filename, 'r')
         log = f.read()
     return log
 
 def get_data(filename):
+    print("Get log")
     log = get_log(filename)
-    data = datatize_expr(log, 0)
+    print(log)
+    print("Data")
+    if type(log) == bytes:
+        data = datatize_expr(str(log), 0)
+    else:
+        data = datatize_expr(log, 0)
+    print(data)
     return data
 
 def convert_data(data):
+    print("Convert data")
+    print(data)
     data_dict = {}
     data_dict['super'] = {}
     data_dict['turns'] = defaultdict(list)
     turn_numb = -1
     for i in data:
+        print(i)
         if list_key(i) == 'gameName':
             data_dict['super']['gameName'] = list_data(i)
         elif list_key(i) == 'status':
@@ -57,7 +68,6 @@ def convert_data(data):
             data_dict['turns'][turn_numb].append(i)
         elif list_key(i) == 'game-winner':
             data_dict['super']['winner'] = i
-
     return data_dict
 
 def datatize_expr(expr, depth):
@@ -86,7 +96,6 @@ def datatize_expr(expr, depth):
             if has_sub_exp:
                 p_data = [expr_key(clean_expr(s_exp))]
                 p_data.append([s_data for s_data in datatize_expr(strip_parent_expr(s_exp), depth + 1)])
-                # print p_data
                 data.append(p_data)
             else:
                 data.append(clean_expr(s_exp))
@@ -123,12 +132,14 @@ def strip_parent_expr(string):
                 building_exp = False
     return new_string
 
-if __name__ == "__main__":
+def testing():
     # filename = '10022-c0ca0.gamelog'
-    filename = '10007-eb6d8.gamelog'
+    # filename = '10007-eb6d8.gamelog'
+    filename = 'glogs/10007-eb6d8.glog'
     # decompress_file(filename + '.gamelog')
     data = convert_data(get_data(filename))
     from game_object import Game
+    print(data)
     c = Game(data['super']['gameName'])
     c.processTurns(data['turns'])
     print('total turns', c.total_turns)
@@ -139,3 +150,14 @@ if __name__ == "__main__":
     print(c.player1_created_units)
     print(c.player2_created_units)
     print(c.units_per_turn)
+    
+
+def datatize_test():
+    string = '''("gameName" "Plants")("status" ("game" 2048 1024 0 300 0 10007 75 10 5 10 500 50) ("Player" (0 "Shell AI" 10 50.000000) (1 "Why do Golbats wear plants?" 10 0)) ("Mappable") ("Plant" (10 151 512 0 0 0 1200 0 0 150 0 0 0 0 0 0) (11 1896 512 1 0 0 1200 0 0 150 0 0 0 0 0 0) (12 289 336 2 7 0 0 0 0 100 0 0 200 0 200 200) (13 1759 336 2 7 0 0 0 0 100 0 0 200 0 200 200) (14 577 554 2 7 0 0 0 0 100 0 0 200 0 200 200) (15 1471 554 2 7 0 0 0 0 100 0 0 200 0 200 200) (16 554 908 2 7 0 0 0 0 100 0 0 200 0 200 200) (17 1494 908 2 7 0 0 0 0 100 0 0 200 0 200 200) (18 302 313 2 7 0 0 0 0 100 0 0 200 0 200 200) (19 1746 313 2 7 0 0 0 0 100 0 0 200 0 200 200) (20 621 266 2 7 0 0 0 0 100 0 0 200 0 200 200) (21 1427 266 2 7 0 0 0 0 100 0 0 200 0 200 200) (22 815 150 2 7 0 0 0 0 100 0 0 200 0 200 200) (23 1233 150 2 7 0 0 0 0 100 0 0 200 0 200 200) (24 460 869 2 7 0 0 0 0 100 0 0 200 0 200 200) (25 1588 869 2 7 0 0 0 0 100 0 0 200 0 200 200)) ("Mutation" (2 "Mother" 0 0 0 1200 150 0 0 0 0) (3 "Spawner" 1 5 0 40 75 0 0 0 0) (4 "Choker" 2 10 1 10 40 1 1 6 18) (5 "Soaker" 3 25 1 40 20 1 0 0 25) (6 "Tumbleweed" 4 10 1 15 30 1 5 9 27) (7 "Aralia" 5 60 1 90 60 1 20 38 80) (8 "Titan" 6 24 0 66 70 1 3 3 3) (9 "Pool" 7 0 0 0 100 0 0 200 200)))("animations" ("add" 0) ("add" 1) ("add" 2) ("add" 3) ("add" 4) ("add" 5) ("add" 6) ("add" 7) ("add" 8) ("add" 9) ("add" 10) ("add" 11) ("add" 12) ("add" 13) ("add" 14) ("add" 15) ("add" 16) ("add" 17) ("add" 18) ("add" 19) ("add" 20) ("add" 21) ("add" 22) ("add" 23) ("add" 24) ("add" 25))'''
+    dat = datatize_expr(string, 0)
+    c_d = convert_data(dat)
+    print(c_d)
+
+if __name__ == "__main__":
+    #datatize_test()
+    testing()

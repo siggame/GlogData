@@ -29,8 +29,8 @@ class Game(object):
         if self.glogdata is None:
             return
         self.glogdata.set_game(self)
-        sorted_keys = data.keys()
-        sorted_keys.sort()
+        sorted_keys = sorted(data.keys())
+        
         for i in sorted_keys:
             self._process(data[i])
             
@@ -87,7 +87,7 @@ class GameData(object):
         self.gameObj = gameObj
 
     def params(self):
-        return self.__dict__.keys()
+        return list(self.__dict__.keys())
 
     def get_funcs(self, spec):
         if self.params().count(spec):
@@ -125,8 +125,7 @@ class ChessData(GameData):
         self.game_order = [self.empty_func, self.turn_func, self.empty_func, self.empty_func]
     
     def game_func(self, data):
-        print data
-        pass
+        print(data)
         
 class MarsData(GameData):
     def __init__(self):
