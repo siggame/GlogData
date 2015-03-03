@@ -105,7 +105,13 @@ def strip_quotes(expr):
     return expr.replace('"', '')
 
 def strip_parent_expr(string):
-    # string = strip_junk(string)
+    string = string[string.find('(')+1:]
+    string = string[string.find('('):]
+    string = string[:string.rfind(')')+1]
+    string = string[:string.rfind(')')]
+    return string
+
+def strip_parent_expr_old(string):
     new_string = ""
     p_count = 0
     building_exp = False
