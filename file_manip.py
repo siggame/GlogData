@@ -39,26 +39,19 @@ def get_log(filename):
     return log
 
 def get_data(filename):
-    print("Get log")
     log = get_log(filename)
-    print(log)
-    print("Data")
     if type(log) == bytes:
         data = datatize_expr(str(log), 0)
     else:
         data = datatize_expr(log, 0)
-    print(data)
     return data
 
 def convert_data(data):
-    print("Convert data")
-    print(data)
     data_dict = {}
     data_dict['super'] = {}
     data_dict['turns'] = defaultdict(list)
     turn_numb = -1
     for i in data:
-        print(i)
         if list_key(i) == 'gameName':
             data_dict['super']['gameName'] = list_data(i)
         elif list_key(i) == 'status':
@@ -105,7 +98,8 @@ def clean_expr(expr):
     return strip_quotes(strip_paren(expr))
 
 def strip_paren(expr):
-    return expr.strip('(').strip(')')
+    return expr[1:len(expr)-1]
+    # return expr.strip('(').strip(')')
 
 def strip_quotes(expr):
     return expr.replace('"', '')
@@ -139,7 +133,7 @@ def testing():
     # decompress_file(filename + '.gamelog')
     data = convert_data(get_data(filename))
     from game_object import Game
-    print(data)
+
     c = Game(data['super']['gameName'])
     c.processTurns(data['turns'])
     print('total turns', c.total_turns)
