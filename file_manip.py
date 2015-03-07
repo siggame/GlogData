@@ -1,6 +1,9 @@
-from bz2 import BZ2File
+from bz2 import BZ2File, BZ2Decompressor
+import bz2
 from collections import defaultdict
 from utilities import sexpr_key, expr_key, expr_data, list_key, list_data
+import urllib
+import os
 import time
 
 def decompress_file(filename):
@@ -16,6 +19,7 @@ def decompress_file(filename):
     new_file = open(filename_ext[0] + '.gamelog', 'w')
     new_file.write(log)
     new_file.close()
+
 
 def get_log(filename):
     filename_ext = filename.split('.')
@@ -38,8 +42,30 @@ def get_log(filename):
         log = f.read()
     return log
 
-def get_data(filename):
+def get_data_from_file(filename):
     log = get_log(filename)
+    if type(log) == bytes:
+        data = datatize_expr(str(log), 0)
+    else:
+        data = datatize_expr(log, 0)
+    return data
+
+def get_log_from_url(url):
+    #data = #requests.get(url)
+    print('url ' + url)
+    urlopener = urllib.urlopen(url)
+    print(urlopener)
+    data = urlopener.read()
+    try:
+        log = bz2.decompress(data)
+        return log
+    except:
+        print "error reading log"
+        
+    return data
+
+def get_data_from_url(url):
+    log = get_log_from_url(url)
     if type(log) == bytes:
         data = datatize_expr(str(log), 0)
     else:
@@ -137,7 +163,7 @@ def testing():
     # filename = '10007-eb6d8.gamelog'
     filename = 'glogs/10007-eb6d8.glog'
     # decompress_file(filename + '.gamelog')
-    data = convert_data(get_data(filename))
+    data = convert_data(get_data_from_file(filename))
     from game_object import Game
 
     c = Game(data['super']['gameName'])
@@ -160,11 +186,21 @@ def datatize_test():
 
 def droid_test():
     filename = '35-d5198.glog'
-    data = convert_data(get_data(filename))
+    data = convert_data(get_data_from_file(filename))
+    from game_object import Game
+    c = Game(data['super']['gameName'])
+    c.processTurns(data['turns'])
+    print(c.created_units)
+
+def url_test():
+    #url = 'http://siggame-arena-test-bucket.s3.amazonaws.com/35-d5198.glog'
+    url = 'http://siggame-arena-test-bucket.s3.amazonaws.com/42-89204.glog'
+    data = convert_data(get_data_from_url(url))
     from game_object import Game
     c = Game(data['super']['gameName'])
     c.processTurns(data['turns'])
     print(c.created_units)
 
 if __name__ == "__main__":
-    droid_test()
+    url_test()
+    #droid_test()
