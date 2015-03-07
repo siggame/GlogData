@@ -52,9 +52,7 @@ def get_data_from_file(filename):
 
 def get_log_from_url(url):
     #data = #requests.get(url)
-    print('url ' + url)
     urlopener = urllib.urlopen(url)
-    print(urlopener)
     data = urlopener.read()
     try:
         log = bz2.decompress(data)
