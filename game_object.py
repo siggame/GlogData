@@ -23,6 +23,9 @@ class Game(object):
 
         self.units_per_turn = defaultdict(list)
 
+    def attributes(self):
+        return self.glogdata.attributes
+
     def unit_created(self):
         self.created_units += 1
 
@@ -148,6 +151,10 @@ class DroidsData(GameData):
         self.droid_order = ['id', 'empty', 'owner']
 
         self.droid_ids_found = []
+
+    #needs to return a list of attributes, generally the attributes should be numbers
+    def attributes(self):
+        return [self.gameObj.created_units]
 
     def _game_func(self, data):
         turns = self.get_item('turn', self.game_order, data)
