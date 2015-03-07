@@ -201,6 +201,13 @@ def url_test():
     c.processTurns(data['turns'])
     print(c.created_units)
 
+def create_from_url(url):
+    from game_object import Game
+    data = convert_data(get_data_from_url(url))
+    c = Game(data['super']['gameName'])
+    c.processTurns(data['turns'])
+    return c
+
 if __name__ == "__main__":
     url_test()
     #droid_test()
