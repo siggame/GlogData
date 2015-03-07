@@ -7,6 +7,8 @@ def get_game_type(game_name):
 def get_game_data_type(game_name):
     if game_name == 'chess':
         return ChessData()
+    elif game_name == 'Droids':
+        return DroidsData()
     elif game_name == 'Plants':
         return PlantsData()
 
@@ -135,6 +137,29 @@ class MarsData(GameData):
     def _game_func(self, data):
         pass
 
+class DroidsData(GameData):
+    def __init__(self):
+        super(DroidsData, self).__init__()
+        
+        self.game_func = self._game_func
+        self.droid_func = self._droid_func
+
+        self.game_order = ['width', 'height', 'turn', 'empty', 'empty']
+        self.droid_order = ['id', 'empty', 'owner']
+
+        self.droid_ids_found = []
+
+    def _game_func(self, data):
+        turns = self.get_item('turn', self.game_order, data)
+
+    def _droid_func(self, data):
+        droid_id = int(self.get_item('id', self.droid_order, data))
+        if not self.droid_ids_found.count(droid_id):
+            self.droid_ids_found.append(droid_id)
+        self.gameObj.created_units = len(self.droid_ids_found)
+            
+
+
 class PlantsData(GameData):
     def __init__(self):
         super(PlantsData, self).__init__()
@@ -150,9 +175,6 @@ class PlantsData(GameData):
         self.plant_ids_found = []
         self.player1_ids = []
         self.player2_ids = []
-
-        # self.uproot = [self.empty_func, self.empty_func, self.empty_func, self.empty_func, self.empty_func]
-        # self.animations = [self.empty_func]
 
     def _game_func(self, data):
         turns = self.get_item('turn', self.game_order, data)

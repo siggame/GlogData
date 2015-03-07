@@ -158,6 +158,13 @@ def datatize_test():
     c_d = convert_data(dat)
     print(c_d)
 
+def droid_test():
+    filename = '35-d5198.glog'
+    data = convert_data(get_data(filename))
+    from game_object import Game
+    c = Game(data['super']['gameName'])
+    c.processTurns(data['turns'])
+    print(c.created_units)
+
 if __name__ == "__main__":
-    #datatize_test()
-    testing()
+    droid_test()
