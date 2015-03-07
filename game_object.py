@@ -24,7 +24,7 @@ class Game(object):
         self.units_per_turn = defaultdict(list)
 
     def attributes(self):
-        return self.glogdata.attributes
+        return self.glogdata.attributes()
 
     def unit_created(self):
         self.created_units += 1
@@ -106,6 +106,9 @@ class GameData(object):
     def add_func(self, data):
         pass
 
+    def attributes(self):
+        return []
+
     def width_func(self, data):
         self.gameObj.width = int(data)
 
@@ -131,7 +134,7 @@ class ChessData(GameData):
     
     def game_func(self, data):
         print(data)
-        
+
 class MarsData(GameData):
     def __init__(self):
         super(MarsData, self).__init__()
