@@ -38,6 +38,7 @@ class Game(object):
         
         for i in sorted_keys:
             self._process(data[i])
+        self.glogdata.end_game()
             
     def _process(self, data, key=None):
         for i in data:
@@ -127,6 +128,9 @@ class GameData(object):
     def get_item(self, string, d_type, data):
         return data[d_type.index(string)]
 
+    def end_game(self):
+        pass
+
 class ChessData(GameData):
     def __init__(self):
         super(ChessData, self).__init__()
@@ -157,11 +161,21 @@ class DroidsData(GameData):
 
         self.max_player1_scrap = 0
         self.max_player2_scrap = 0
+        self.max_player1_scrap_mean_difference = 0
+        self.max_player2_scrap_mean_difference = 0
+        self.player1_scrap = []
+        self.player2_scrap = []
         self.droid_ids_found = []
+
+    def end_game(self):
+        self.mean_player1_scrap = float(sum(self.player1_scrap))/len(self.player1_scrap)
+        self.mean_player2_scrap = float(sum(self.player2_scrap))/len(self.player2_scrap)
+        self.player1_scrap_varience = sum([math.pow((i - self.mean_player1_scrap), 2)])/len(self.player1_scrap)
+        self.player2_scrap_varience = sum([math.pow((i - self.mean_player2_scrap), 2)])/len(self.player2_scrap)
 
     #needs to return a list of attributes, generally the attributes should be numbers
     def attributes(self):
-        return [self.gameObj.created_units, self.max_player1_scrap, self.max_player2_scrap]
+        return [self.gameObj.created_units, self.max_player1_scrap, self.max_player2_scrap, self.mean_player1_scrap, self.mean_player2_scrap, self.player1_scrap_varience, self.player2_scrap_varience]
 
     def _game_func(self, data):
         turns = self.get_item('turn', self.game_order, data)
@@ -169,11 +183,13 @@ class DroidsData(GameData):
     def _player_func(self, data):
         current_scrap = int(self.get_item('scrap', self.player_order, data))
         if int(self.get_item('id', self.player_order, data)) == 0:
+            self.player1_scrap.append(current_scrap)
             if self.max_player1_scrap < current_scrap:
                 self.max_player1_scrap = current_scrap
         elif int(self.get_item('id', self.player_order, data)) == 1:
+            self.player2_scrap.append(current_scrap)
             if self.max_player2_scrap < current_scrap:
-                self..max_player2_scrap = current_scrap
+                self.max_player2_scrap = current_scrap
 
     def _droid_func(self, data):
         droid_id = int(self.get_item('id', self.droid_order, data))
