@@ -172,8 +172,8 @@ class DroidsData(GameData):
     def end_game(self):
         self.mean_player1_scrap = float(sum(self.player1_scrap))/len(self.player1_scrap)
         self.mean_player2_scrap = float(sum(self.player2_scrap))/len(self.player2_scrap)
-        self.player1_scrap_varience = sum([math.pow((i - self.mean_player1_scrap), 2)])/len(self.player1_scrap)
-        self.player2_scrap_varience = sum([math.pow((i - self.mean_player2_scrap), 2)])/len(self.player2_scrap)
+        self.player1_scrap_varience = sum([math.pow((i - self.mean_player1_scrap), 2) for i in self.player1_scrap])/len(self.player1_scrap)
+        self.player2_scrap_varience = sum([math.pow((i - self.mean_player2_scrap), 2) for i in self.player2_scrap])/len(self.player2_scrap)
 
     #needs to return a list of attributes, generally the attributes should be numbers
     def attributes(self):
