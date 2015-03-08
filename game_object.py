@@ -148,19 +148,32 @@ class DroidsData(GameData):
         super(DroidsData, self).__init__()
         
         self.game_func = self._game_func
+        self.player_func = self._player_func
         self.droid_func = self._droid_func
 
         self.game_order = ['width', 'height', 'turn', 'empty', 'empty']
+        self.player_order = ['id', 'name', 'time', 'scrap']
         self.droid_order = ['id', 'empty', 'owner']
 
+        self.max_player1_scrap = 0
+        self.max_player2_scrap = 0
         self.droid_ids_found = []
 
     #needs to return a list of attributes, generally the attributes should be numbers
     def attributes(self):
-        return [self.gameObj.created_units]
+        return [self.gameObj.created_units, self.max_player1_scrap, self.max_player2_scrap]
 
     def _game_func(self, data):
         turns = self.get_item('turn', self.game_order, data)
+
+    def _player_func(self, data):
+        current_scrap = int(self.get_item('scrap', self.player_order, data))
+        if int(self.get_item('id', self.player_order, data)) == 0:
+            if self.max_player1_scrap < current_scrap:
+                self.max_player1_scrap = current_scrap
+        elif int(self.get_item('id', self.player_order, data)) == 1:
+            if self.max_player2_scrap < current_scrap:
+                self..max_player2_scrap = current_scrap
 
     def _droid_func(self, data):
         droid_id = int(self.get_item('id', self.droid_order, data))
