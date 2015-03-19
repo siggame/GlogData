@@ -13,6 +13,8 @@ def get_game_data_type(game_name):
         return DroidsData()
     elif game_name == 'Plants':
         return PlantsData()
+    elif game_name == 'Pharaoh':
+        return PharaohData()
 
 class Game(object):
     def __init__(self, game_name):
@@ -254,3 +256,10 @@ class PlantsData(GameData):
             self.gameObj.spore_count_by_turn = [float(data)]
         else:
             self.gameObj.spore_count_by_turn.append(float(data))
+
+
+class PharaohData(GameData):
+    def __init__(self):
+        super(PharoahData, self).__init__()
+        
+    
