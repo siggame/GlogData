@@ -260,6 +260,6 @@ class PlantsData(GameData):
 
 class PharaohData(GameData):
     def __init__(self):
-        super(PharoahData, self).__init__()
+        super(PharaohData, self).__init__()
         
     
