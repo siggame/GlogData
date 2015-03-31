@@ -269,12 +269,14 @@ class PharaohData(GameData):
         self.player_order = ['id', 'name', 'time left', 'a', 'b']
         
         self.a1 = []
+        self.b1 = []
 
     def end_game(self):
         self.mean_a = float(sum(self.a1))/len(self.a1)
+        self.mean_b = float(sum(self.b1))/len(self.b1)
         
     def attributes(self):
-        return [self.mean_a]
+        return [self.mean_a, self.mean_b]
 
     def _game_func(self, data):
         pass
@@ -282,3 +284,4 @@ class PharaohData(GameData):
     def _player_func(self, data):
         a = int(self.get_item('a', self.player_order, data))
         self.a1.append(a)
+        self.b1.append(int(self.get_item('b', self.player_order, data)))
