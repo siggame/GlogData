@@ -262,4 +262,23 @@ class PharaohData(GameData):
     def __init__(self):
         super(PharaohData, self).__init__()
         
+    self.game_func = self._game_func
+    self.player_func = self._player_func
+
+    self.game_order = ['width', 'height', 'turn']
+    self.player_order = ['id', 'name', 'time left', 'a', 'b']
     
+    self.a1 = []
+
+    def end_game(self):
+        self.mean_a = float(sum(self.a1))/len(self.a1)
+        
+    def attributes(self):
+        return self.mean_a
+
+    def _game_func(self, data):
+        pass
+
+    def _player_func(self, data):
+        a = int(self.get_item('a', self.player_order, data))
+        self.a1.append(a)
