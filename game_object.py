@@ -274,7 +274,7 @@ class PharaohData(GameData):
         self.mean_a = float(sum(self.a1))/len(self.a1)
         
     def attributes(self):
-        return self.mean_a
+        return [self.mean_a]
 
     def _game_func(self, data):
         pass
