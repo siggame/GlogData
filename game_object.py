@@ -288,7 +288,7 @@ class PharaohData(GameData):
     def _player_func(self, data):
         a = int(self.get_item('a', self.player_order, data))
         time = float(self.get_item('time left', self.player_order, data))
-        if int(self.get_time('id', self.player_order, data)) == 0:
+        if int(self.get_item('id', self.player_order, data)) == 0:
             self.a1.append(a)
             self.time1.append(time)
         else:
