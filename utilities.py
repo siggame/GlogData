@@ -1,3 +1,4 @@
+import math
 
 def sexpr_key(s_expr):
     return s_expr.strip('(').split(' ')[0]
@@ -30,3 +31,17 @@ def extracted_data(string):
     t.pop(0)
     return t
 
+
+def mean(data):
+    if data:
+        return float(sum(data))/len(data)
+    else:
+        return 0
+
+def variance(data):
+    if data:
+        m_mean = mean(data)
+        return sum([math.pow((i - m_mean), 2) for i in data])/len(data)
+    else:
+        return 0
+        

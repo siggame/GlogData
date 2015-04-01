@@ -1,4 +1,4 @@
-from utilities import list_data, list_key, extracted_data
+from utilities import list_data, list_key, extracted_data, mean, variance
 from collections import defaultdict
 import math
 
@@ -269,13 +269,15 @@ class PharaohData(GameData):
         self.player_order = ['id', 'name', 'time left', 'a', 'b']
         
         self.a1 = []
-        self.b1 = []
         self.a2 = []
+        self.time1 = []
+        self.time2 = []
 
     def end_game(self):
-        self.mean_a = float(sum(self.a1))/len(self.a1)
-        self.mean_b = float(sum(self.b1))/len(self.b1)
-        self.mean_a2 = float(sum(self.a2))/len(self.a2)
+        self.mean_a = mean(self.a1)
+        self.mean_a2 = mean(self.a2)
+        self.mean_t1 = mean(self.time1)
+        self.mean_t2 = mean(self.time2)
         
     def attributes(self):
         return [self.mean_a, self.mean_a2]
@@ -285,6 +287,10 @@ class PharaohData(GameData):
 
     def _player_func(self, data):
         a = int(self.get_item('a', self.player_order, data))
-        self.a1.append(a)
-        self.b1.append(int(self.get_item('b', self.player_order, data)))
-        self.a2.append(a*20)
+        time = float(self.get_item('time left', self.player_order, data))
+        if int(self.get_time('id', self.player_order, data)) == 0:
+            self.a1.append(a)
+            self.time1.append(time)
+        else:
+            self.a2.append(a)
+            self.time2.append(time)
