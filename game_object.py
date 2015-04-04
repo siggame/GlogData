@@ -264,23 +264,27 @@ class PharaohData(GameData):
         
         self.game_func = self._game_func
         self.player_func = self._player_func
+        self.trap_func = self._trap_func
 
         self.game_order = ['width', 'height', 'turn']
         self.player_order = ['id', 'name', 'time left', 'a', 'b']
-        
+        self.trap_order = ['owner', 'type', 'visible', 'active', 'bodycount']
+
         self.a1 = []
         self.a2 = []
         self.time1 = []
         self.time2 = []
+        self.trap_body_c = []
 
     def end_game(self):
         self.mean_a = mean(self.a1)
         self.mean_a2 = mean(self.a2)
         self.mean_t1 = mean(self.time1)
         self.mean_t2 = mean(self.time2)
+        self.mean_tC = mean(self.trap_body_c)
         
     def attributes(self):
-        return [self.mean_a, self.mean_a2]
+        return [self.mean_a, self.mean_tC]
 
     def _game_func(self, data):
         pass
@@ -294,3 +298,6 @@ class PharaohData(GameData):
         else:
             self.a2.append(a)
             self.time2.append(time)
+
+    def _trap_func(self, data):
+        self.trap_body_c.append(int(self.get_item('bodycount', self.trap_order, data)))
