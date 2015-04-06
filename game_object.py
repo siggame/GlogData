@@ -266,15 +266,19 @@ class PharaohData(GameData):
         self.player_func = self._player_func
         self.trap_func = self._trap_func
 
+        self.theif_func = self._theif_func
+
         self.game_order = ['width', 'height', 'turn']
         self.player_order = ['id', 'name', 'time left', 'a', 'b']
         self.trap_order = ['owner', 'type', 'visible', 'active', 'bodycount']
+        self.theif_order = ['owner', 'theiftype']
 
         self.a1 = []
         self.a2 = []
         self.time1 = []
         self.time2 = []
         self.trap_body_c = []
+        self.theif_types = []
 
     def end_game(self):
         self.mean_a = mean(self.a1)
@@ -284,7 +288,7 @@ class PharaohData(GameData):
         self.mean_tC = mean(self.trap_body_c)
         
     def attributes(self):
-        return [self.mean_a, self.mean_tC]
+        return [self.mean_tC, len(self.theif_types)]
 
     def _game_func(self, data):
         pass
@@ -301,3 +305,9 @@ class PharaohData(GameData):
 
     def _trap_func(self, data):
         self.trap_body_c.append(int(self.get_item('bodycount', self.trap_order, data)))
+        
+    def _theif_func(self, data):
+        t = int(self.get_item('thieftype', self.theif_order, data)) 
+        if t in not self.theif_types: 
+            self.theif_types.append(t)
+            
