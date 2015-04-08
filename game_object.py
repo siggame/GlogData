@@ -308,6 +308,6 @@ class PharaohData(GameData):
         
     def _theif_func(self, data):
         t = int(self.get_item('thieftype', self.theif_order, data)) 
-        if t in not self.theif_types: 
+        if t not in self.theif_types: 
             self.theif_types.append(t)
             
